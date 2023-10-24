@@ -10,7 +10,10 @@ export function validateRequest(location: RequestLocation, schema: z.AnyZodObjec
       req[location] = validatedSchema;
       next();
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).json({ 
+        success: false,
+        error
+       });
     }
   };
 }

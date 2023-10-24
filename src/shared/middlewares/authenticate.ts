@@ -1,67 +1,27 @@
-import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../jwt";
-import database from "../../loaders/mongo";
+import { NextFunction, Request, Response } from 'express';
+import { verifyToken } from '../jwt';
+import database from '../../loaders/mongo';
 
-// to authenticate faculty
-export default function authenticateFaculty() {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const bearer_token = req.headers["authorization"];
-    console.log(bearer_token);
-    const token = bearer_token?.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
-    }
+export default function authenticateToken() {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const email = verifyToken(token);
-      const db = await database();
-      const faculty = (await db).collection("faculties").findOne({
-        email,
-      });
-      if (!faculty) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
+      const authHeader = req.headers['authorization'];
+      const token = authHeader?.split(' ')[1];
+      if (!token) {
+        throw { statusCode: 401, message: 'Token Not Found' };
       }
-      res.locals.faculty = faculty;
+      const { email } = verifyToken(token);
+      const data = await (await database()).collection('october-test').findOne({ email, host: true });
+      if (!data) {
+        throw { statusCode: 404, message: 'Host Not Found' };
+      }
+      res.locals.user = data;
       next();
     } catch (error) {
-      return res.status(401).json({
-        message: "Unauthorized",
+      res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.message,
       });
     }
   };
-}
-
-// to authentiate student
-export function authenticateStudent(){
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const bearer_token = req.headers["authorization"];
-    console.log(bearer_token);
-    const token = bearer_token?.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
-    }
-    try {
-      const email = verifyToken(token);
-      const db = await database();
-      const students = (await db).collection("students").findOne({
-        email,
-      });
-      if (!students) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
-      }
-      res.locals.faculty = students;
-      next();
-    } catch (error) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
-    }
-  }
 }

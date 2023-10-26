@@ -7,6 +7,12 @@ export const handleGetList = async (): Promise<unknown> => {
     return people;
 };
 
+export const handleGetAll = async (): Promise<unknown> => {
+    const collection = (await database()).collection('october-test');
+    const people = await collection.find({}, {projection: {name: 1, year: 1, domain: 1, currentCount:1}}).toArray();
+    return people;
+};
+
 export const handleListAllow = async (id: string, name: string): Promise<void> => {
     const collection = (await database()).collection('october-test');
     const person = await collection.findOne({ _id: new ObjectId(id), name });

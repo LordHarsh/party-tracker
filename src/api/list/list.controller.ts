@@ -1,9 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
-import { handleGetList, handleListAllow, handleListDeny } from './list.services';
+import { handleGetList, handleListAllow, handleListDeny, handleGetAll } from './list.services';
 
 export const getList = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const people = await handleGetList();
+        res.status(200).json({
+            success: true,
+            message: 'Successfully retrieved list',
+            data: people,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getAll = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const people = await handleGetAll();
         res.status(200).json({
             success: true,
             message: 'Successfully retrieved list',

@@ -19,7 +19,7 @@ export const handleListAllow = async (id: string, name: string): Promise<void> =
     if (!person) {
         throw new Error('Person not found');
     }
-    await collection.updateOne({ _id: new ObjectId(id), name }, { $set: { isRequesting: false }, $inc: { maxCount: 1 }, $push: { persimmions: name } });
+    await collection.updateOne({ _id: new ObjectId(id), name }, { $set: { isRequesting: false }, $inc: { maxCount: 1 }, $push: { permission: name } });
     return;
 };
 

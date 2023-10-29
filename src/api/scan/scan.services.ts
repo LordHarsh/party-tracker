@@ -1,8 +1,10 @@
 import { ObjectId } from 'mongodb';
 import database from '../../loaders/mongo';
+import config from "../../config";
+
 
 export const handleScan = async ( id: string, name: string): Promise<unknown> => {
-    const collection = (await database()).collection('october-test');
+    const collection = (await database()).collection(config.collectionName);
     const person = await collection.findOne({ _id: new ObjectId(id), name });
     if(!person) {
         throw new Error('Person not found')
@@ -16,7 +18,7 @@ export const handleScan = async ( id: string, name: string): Promise<unknown> =>
 };
 
 export const handleScanAllowMore = async ( id: string, name: string, hostName: string): Promise<unknown> => {
-    const collection = (await database()).collection('october-test');
+    const collection = (await database()).collection(config.collectionName);
     const person = await collection.findOne({ _id: new ObjectId(id), name });
     if(!person) {
         throw new Error('Person not found')
@@ -32,7 +34,7 @@ export const handleScanAllowMore = async ( id: string, name: string, hostName: s
 }
 
 export const handleScanIgnore = async ( id: string, name: string): Promise<void> => {
-    const collection = (await database()).collection('october-test');
+    const collection = (await database()).collection(config.collectionName);
     const person = await collection.findOne({ _id: new ObjectId(id), name });
     if(!person) {
         throw new Error('Person not found')
